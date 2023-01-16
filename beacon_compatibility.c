@@ -291,19 +291,15 @@ void BeaconGetSpawnTo(BOOL x86, char* buffer, int length) {
     }
     if (x86) {
         tempBufferPath = "C:\\Windows\\"X86PATH"\\"DEFAULTPROCESSNAME;
-        if (strlen(tempBufferPath) > length) {
-            return;
-        }
-        memcpy(buffer, tempBufferPath, strlen(tempBufferPath));
     }
     else {
         tempBufferPath = "C:\\Windows\\"X64PATH"\\"DEFAULTPROCESSNAME;
-        if (strlen(tempBufferPath) > length) {
-            return;
-        }
-        memcpy(buffer, tempBufferPath, strlen(tempBufferPath));
-
     }
+
+    if ((int)strlen(tempBufferPath) > length) {
+        return;
+    }
+    memcpy(buffer, tempBufferPath, strlen(tempBufferPath));
     return;
 }
 
@@ -335,8 +331,9 @@ void BeaconCleanupProcess(PROCESS_INFORMATION* pInfo) {
 }
 
 BOOL toWideChar(char* src, wchar_t* dst, int max) {
-    /* Leaving this to be implemented by people needing/wanting it */
-    return FALSE;
+    if (max < sizeof(wchar_t))
+        return FALSE;
+    return MultiByteToWideChar(CP_ACP, MB_ERR_INVALID_CHARS, src, -1, dst, max / sizeof(wchar_t));
 }
 
 char* BeaconGetOutputData(int *outsize) {
